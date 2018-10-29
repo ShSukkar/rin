@@ -1,8 +1,6 @@
 import React from "react";
 import axios from "axios";
 import "./Filter.css";
-import { connect } from "react-redux";
-import { setCountries } from "../../../actions/index";
 
 class Filter extends React.Component {
   constructor(props) {
@@ -18,20 +16,20 @@ class Filter extends React.Component {
 
   fetchAllCountries = () => {
     axios.get("/api/countries").then(res => {
-      this.props.setCountries(res.data);
+      this.setState({
+        countries: res.data
+      });
     });
   };
 
   render() {
-    let countries = !this.props.countries.countries
-      ? []
-      : this.props.countries.countries.map(country => {
-          return (
-            <option value={country.name} key={country.alpha2Code}>
-              {country.name}
-            </option>
-          );
-        });
+    const countries = this.state.countries.map(country => {
+      return (
+        <option value={country.name} key={country.alpha2Code}>
+          {country.name}
+        </option>
+      );
+    });
 
     return (
       <div className="filter">
@@ -70,6 +68,7 @@ class Filter extends React.Component {
             Filter by project capacity:
             {"    "}
             <span id="capacity-range" data-sympol="  person" />
+            <span>{this.props.options.capacity}</span>
           </label>
           <input
             id="capacity"
@@ -86,7 +85,7 @@ class Filter extends React.Component {
           <label htmlFor="starting-year" className="filter-label">
             Filter by project starting-year:
             {"    "}
-            <span id="starting-year-range" data-sympol="" />
+            <span>{this.props.options.year}</span>
           </label>
 
           <input
@@ -110,17 +109,12 @@ class Filter extends React.Component {
             {countries}
           </select>
         </div>
-        <button onClick={this.props.fetchProjects}>fetch</button>
+        <button className="btn" onClick={this.props.fetchProjects}>
+          fetch
+        </button>
       </div>
     );
   }
 }
 
-const mapStateToProps = state => ({
-  countries: state.countries
-});
-
-export default connect(
-  mapStateToProps,
-  { setCountries }
-)(Filter);
+export default Filter;

@@ -1,38 +1,38 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { Route, Link } from "react-router-dom";
-import "./StoriesList.css";
+import { Link } from "react-router-dom";
+import "./ProjectsList.css";
 
-export default class StoriesList extends Component {
+export default class ProjectsList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      allStories: []
+      allProject: []
     };
   }
 
   componentWillMount() {
-    this.fetchAllStories();
+    this.fetchAllProjects();
   }
 
   componentDidMount() {
     document.body.style.overflowY = "auto";
   }
 
-  fetchAllStories = () => {
-    axios.get("/api/stories").then(res => {
-      this.setState({ allStories: res.data }, () => {
-        console.log(this.state.allStories);
+  fetchAllProjects = () => {
+    axios.get("/api/projects").then(res => {
+      this.setState({ allProject: res.data }, () => {
+        console.log(this.state.allProject);
       });
     });
   };
 
-  deleteStory = story => {
+  deleteProject = project => {
     axios
-      .delete(`/api/stories/${story.id}`)
+      .delete(`/api/projects/${project.id}`)
       .then(res => {
         console.log("Deleted Successfully");
-        this.fetchAllStories();
+        this.fetchAllProjects();
       })
       .catch(err => {
         console.log("Error deleting a table row");
@@ -40,20 +40,21 @@ export default class StoriesList extends Component {
   };
 
   render() {
-    const stories = this.state.allStories.map(story => {
+    const projects = this.state.allProject.map(project => {
       return (
         <tr>
-          <td>{story.id}</td>
-          <td>{story.title}</td>
+          <td>{project.id}</td>
+          <td>{project.title}</td>
+          <td>{project.organization_name}</td>
           <td className="project-options">
-            <Link to={`/dashboard/stories/list/${story.id}`}>
+            <Link to={`/dashboard/projects/list/${project.id}`}>
               <i className="far fa-eye" /> show
             </Link>
-            <a>
+            <Link to={`/dashboard/projects/list/updateproject/${project.id}`}>
               <i className="fas fa-edit" />
               update
-            </a>
-            <a onClick={() => this.deleteStory(story)}>
+            </Link>
+            <a onClick={() => this.deleteProject(project)}>
               <i className="fas fa-trash-alt" /> delete
             </a>
           </td>
@@ -67,17 +68,20 @@ export default class StoriesList extends Component {
           <thead>
             <tr>
               <th>
-                <h1>Story ID</h1>
+                <h1>Project ID</h1>
               </th>
               <th>
-                <h1>Story Title</h1>
+                <h1>Project Name</h1>
+              </th>
+              <th>
+                <h1>Organization Name</h1>
               </th>
               <th>
                 <h1>Actions</h1>
               </th>
             </tr>
           </thead>
-          <tbody>{stories}</tbody>
+          <tbody>{projects}</tbody>
         </table>
       </div>
     );
