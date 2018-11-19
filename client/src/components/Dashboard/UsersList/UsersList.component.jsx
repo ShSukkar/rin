@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import "./UsersList.css";
-import { Route, Link } from "react-router-dom";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -14,15 +13,9 @@ export default class UsersList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      users: [
-        {
-          first_name: "ahmad",
-          last_name: "mostafa",
-          organization: "rbk",
-          role: "role",
-          email: "email@mail.com"
-        }
-      ]
+      users: [],
+      currentPage: 1,
+      usersPerPage: 10
     };
   }
 
@@ -38,22 +31,53 @@ export default class UsersList extends Component {
     });
   };
 
+  changeCurrentPage = (number) => {
+    this.setState({ currentPage: number })
+  }
+
   render() {
-    const users = this.state.users.map(user => {
+    const { users, currentPage, usersPerPage } = this.state;
+
+    // Logic for displaying stories
+    const indexOfLastUser = currentPage * usersPerPage;
+    const indexOfFirstUser = indexOfLastUser - usersPerPage;
+    const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+
+    const allUsers = currentUsers.map(user => {
       return (
         <TableRow>
           <TableCell>{user.first_name}</TableCell>
           <TableCell>{user.last_name}</TableCell>
-          <TableCell>{user.organization}</TableCell>
-          <TableCell>{user.role}</TableCell>
+          <TableCell>{user.organization_name}</TableCell>
+          <TableCell>{user.user_role}</TableCell>
           <TableCell>{user.email}</TableCell>
           <TableCell numeric />
         </TableRow>
       );
     });
 
+    // Logic for displaying page numbers
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(users.length / usersPerPage); i++) {
+      pageNumbers.push(i);
+    }
+
+    const allPagesNumbers = pageNumbers.map(number => {
+      return (
+        <li
+          key={number}
+        >
+          <Button variant="fab" mini
+            onClick={() => { this.changeCurrentPage(number) }}
+            className={number === currentPage ? 'active-page-number' : ''}>
+            {number}
+          </Button>
+        </li>
+      );
+    });
+
     return (
-      <Paper>
+      <Paper className="all-users">
         <Table>
           <TableHead>
             <TableRow>
@@ -65,8 +89,12 @@ export default class UsersList extends Component {
               <TableCell />
             </TableRow>
           </TableHead>
-          <TableBody>{users}</TableBody>
+          <TableBody>{allUsers}</TableBody>
         </Table>
+
+        <ul id="page-numbers">
+          {allPagesNumbers}
+        </ul>
       </Paper>
     );
   }
