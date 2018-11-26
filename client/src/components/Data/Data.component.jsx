@@ -1,14 +1,22 @@
 import React, { Component } from "react";
 import "./Data.css";
 import IconButton from "@material-ui/core/IconButton";
+import { Doughnut, Polar, Radar } from 'react-chartjs-2';
+import BarChart from "./Charts/BarChart/BarChart.component";
+import LineChart from "./Charts/LineChart/LineChart.component";
+import PieChart from "./Charts/PieChart/PieChart.component";
+import HorizontalBarChart from "./Charts/HorizontalBarChart/HorizontalBarChart.component";
 
 export default class Data extends Component {
   constructor() {
     super();
-    this.state = {};
+    this.state = {}
   }
 
-  componentDidMount() {}
+  componentWillMount() { }
+
+  componentDidMount() { }
+
 
   scrollToTop = () => {
     document.querySelector(".library").scrollIntoView({
@@ -42,17 +50,8 @@ export default class Data extends Component {
             </div>
           </div>
         </header>
-        <div className=" container ">
-          <section>
-            <h2 className="color-2 upper">
-              Watch UNHCR historical Refugee Data
-            </h2>
-            <iframe
-              title="iframe 1"
-              src="http://data.unhcr.org/dataviz/"
-              frameborder="0"
-            />
-          </section>
+        <div className="container">
+          <BarChart />
         </div>
       </div>
     );
