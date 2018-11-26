@@ -9,7 +9,7 @@ export default class PieChart extends Component {
             chartData: {
                 labels: [],
                 datasets: [{
-                    label: '',
+                    label: this.props.datasestLabel,
                     data: [],
                     backgroundColor: 'green',
                     //backgroundColor: []

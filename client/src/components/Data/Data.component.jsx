@@ -51,7 +51,8 @@ export default class Data extends Component {
           </div>
         </header>
         <div className="container">
-          <BarChart />
+          <h3>Statistics of Asylum Seekers from Syria in 2012</h3>
+          <BarChart datasestLabel={"Asylum Applications"} />
         </div>
       </div>
     );
