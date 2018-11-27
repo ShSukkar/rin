@@ -24,7 +24,8 @@ export default class NewProject extends Component {
         "Water",
         "Agriculture",
         "Infancy",
-        "Housing"
+        "Housing",
+        "Education"
       ],
       title: "",
       start_date: "",
@@ -117,7 +118,7 @@ export default class NewProject extends Component {
     };
     axios
       .post("/api/projects", projectData)
-      .then(function(response) {
+      .then(function (response) {
         document.querySelector(".admin-form form").reset();
         document.querySelector(".done-img").style.display = "flex";
         setTimeout(() => {
@@ -125,7 +126,7 @@ export default class NewProject extends Component {
           document.querySelector(".done-img").style.display = "none";
         }, 2000);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error);
       });
   };

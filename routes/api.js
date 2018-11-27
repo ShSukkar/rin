@@ -89,6 +89,7 @@ router.put("/requests", projectsAPI.acceptProjectRequest);
 
 //projects routes
 router.get("/projects", projectsAPI.getProjects);
+router.get("/projectscount/:type", projectsAPI.getProjectsCountByType);
 router.get("/projects/locations", projectsAPI.getLocations);
 router.get("/projects/search/:options", projectsAPI.getSearchedProjects);
 router.get("/projects/selectedpage", projectsAPI.getSelectedPageProjects);

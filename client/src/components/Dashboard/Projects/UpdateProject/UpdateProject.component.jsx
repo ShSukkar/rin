@@ -25,7 +25,8 @@ export default class UpdateProject extends Component {
         "Water",
         "Agriculture",
         "Infancy",
-        "Housing"
+        "Housing",
+        "Education"
       ],
       title: "",
       start_date: "",
@@ -178,13 +179,13 @@ export default class UpdateProject extends Component {
 
     axios
       .put(`/api/projects/${this.state.id}`, projectData)
-      .then(function(response) {
+      .then(function (response) {
         document.querySelector(".done-img").style.display = "flex";
         setTimeout(() => {
           document.querySelector(".done-img").style.display = "none";
         }, 2000);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error);
       });
   };

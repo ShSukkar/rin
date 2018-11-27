@@ -15,6 +15,14 @@ module.exports.getProjects = (req, res) => {
   });
 };
 
+module.exports.getProjectsCountByType = (req, res) => {
+  let qry = `SELECT count(*) FROM projects WHERE type LIKE "${req.params.type}"`;
+  connection.query(qry, (err, result) => {
+    if (err) throw err;
+    res.send(result);
+  });
+};
+
 // this function enables the admin searching projects in admin dashboard
 module.exports.getSearchedProjects = (req, res) => {
   const filterOption = req.params.options;
