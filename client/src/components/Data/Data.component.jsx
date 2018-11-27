@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "./Data.css";
+import axios from "axios";
 import IconButton from "@material-ui/core/IconButton";
 import { Doughnut, Polar, Radar } from 'react-chartjs-2';
 import BarChart from "./Charts/BarChart/BarChart.component";
@@ -8,12 +9,23 @@ import PieChart from "./Charts/PieChart/PieChart.component";
 import HorizontalBarChart from "./Charts/HorizontalBarChart/HorizontalBarChart.component";
 
 export default class Data extends Component {
-  constructor() {
-    super();
-    this.state = {}
+  constructor(props) {
+    super(props);
+    this.state = {
+      asylumSeekersData: {
+        labels: [],
+        datasets: [{
+          label: "",
+          data: [],
+          backgroundColor: ''
+        }]
+      }
+    }
   }
 
-  componentWillMount() { }
+  componentWillMount() {
+    this.getAsylumSeekersData();
+  }
 
   componentDidMount() { }
 
@@ -29,6 +41,29 @@ export default class Data extends Component {
       behavior: "smooth"
     });
   };
+
+  getAsylumSeekersData = () => {
+    axios.get("http://popdata.unhcr.org/api/stats/asylum_seekers.json?year=2012&&country_of_origin=SYR")
+      .then(res => {
+        let labelsOfAsylumCountries = [];
+        let dataOfAppliedCount = [];
+        for (let i = 0; i < 50; i++) {
+          if (!labelsOfAsylumCountries.includes(res.data[i].country_of_asylum_en) && res.data[i].applied_during_year > 100) {
+            labelsOfAsylumCountries.push(res.data[i].country_of_asylum_en);
+            dataOfAppliedCount.push(res.data[i].applied_during_year);
+          }
+        }
+
+        let datasets = this.state.asylumSeekersData.datasets;
+        datasets[0].data = dataOfAppliedCount;
+        datasets[0].label = "Asylum Applications";
+        datasets[0].backgroundColor = "green";
+        this.setState({ asylumSeekersData: { ...this.state.asylumSeekersData, labels: labelsOfAsylumCountries, datasets: datasets } });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
 
   render() {
     return (
@@ -52,7 +87,9 @@ export default class Data extends Component {
         </header>
         <div className="container">
           <h3>Statistics of Asylum Seekers from Syria in 2012</h3>
-          <BarChart datasestLabel={"Asylum Applications"} />
+          <BarChart data={this.state.asylumSeekersData} />
+          <h3>The RIN Deals</h3>
+          <PieChart datasestLabel={"Conducted Deals"} />
         </div>
       </div>
     );
