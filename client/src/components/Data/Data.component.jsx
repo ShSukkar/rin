@@ -119,10 +119,10 @@ export default class Data extends Component {
           </div>
         </header>
         <div className="container">
-          <h3>Statistics of Asylum Seekers from Syria in 2012</h3>
-          <BarChart data={this.state.asylumSeekersData} />
-          <h3>The RIN Deals</h3>
+          <h3 className="data-heading" style={{ marginTop: 0 }}>The RIN Deals</h3>
           <PieChart data={this.state.RINDealsData} />
+          <h3 className="data-heading">Statistics of Asylum Seekers from Syria in 2012</h3>
+          <BarChart data={this.state.asylumSeekersData} />
         </div>
       </div>
     );

@@ -27,7 +27,7 @@ export default class PieChart extends Component {
                         },
                         legend: {
                             display: true,
-                            position: 'right',
+                            position: 'left',
                             labels: {
                                 fontColor: '#000'
                             }
