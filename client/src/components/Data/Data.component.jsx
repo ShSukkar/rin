@@ -86,17 +86,22 @@ export default class Data extends Component {
         this.setState({ isLoading: false }, () => {
           let labelsOfAsylumCountries = [];
           let dataOfAppliedCount = [];
+          let dataOfRejectedCount = [];
           for (let i = 0; i < 50; i++) {
-            if (!labelsOfAsylumCountries.includes(res.data[i].country_of_asylum_en)) {
+            if ((!labelsOfAsylumCountries.includes(res.data[i].country_of_asylum_en)) && (res.data[i].applied_during_year > 4)) {
               labelsOfAsylumCountries.push(res.data[i].country_of_asylum_en);
               dataOfAppliedCount.push(res.data[i].applied_during_year);
+              dataOfRejectedCount.push(res.data[i].rejected);
             }
           }
 
-          let datasets = [{}];
+          let datasets = [{}, {}];
           datasets[0].data = dataOfAppliedCount;
           datasets[0].label = "Asylum Applications";
           datasets[0].backgroundColor = "green";
+          datasets[1].data = dataOfRejectedCount;
+          datasets[1].label = "Rejected Applications";
+          datasets[1].backgroundColor = "blue";
           this.setState({ asylumSeekersData: { labels: labelsOfAsylumCountries, datasets: datasets } });
         })
       })
