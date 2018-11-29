@@ -25,12 +25,12 @@ export default class Data extends Component {
     this.state = {
       asylumSeekersData: {},
       RINDealsData: {},
-      tmp: []
+      selectedYear: 2012
     }
   }
 
   componentWillMount() {
-    this.getAsylumSeekersData();
+    this.getAsylumSeekersDataByYear();
     this.getRINDealsData();
   }
 
@@ -47,29 +47,6 @@ export default class Data extends Component {
       behavior: "smooth"
     });
   };
-
-  getAsylumSeekersData = () => {
-    axios.get("http://popdata.unhcr.org/api/stats/asylum_seekers.json?year=2012&&country_of_origin=SYR")
-      .then(res => {
-        let labelsOfAsylumCountries = [];
-        let dataOfAppliedCount = [];
-        for (let i = 0; i < 50; i++) {
-          if (!labelsOfAsylumCountries.includes(res.data[i].country_of_asylum_en) && res.data[i].applied_during_year > 100) {
-            labelsOfAsylumCountries.push(res.data[i].country_of_asylum_en);
-            dataOfAppliedCount.push(res.data[i].applied_during_year);
-          }
-        }
-
-        let datasets = [{}];
-        datasets[0].data = dataOfAppliedCount;
-        datasets[0].label = "Asylum Applications";
-        datasets[0].backgroundColor = "green";
-        this.setState({ asylumSeekersData: { labels: labelsOfAsylumCountries, datasets: datasets } });
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
 
   getRINDealsData = () => {
     let labels = ["Housing", "Education", "Agriculture", "Health", "Water", "Nutrition", "Infancy"];
@@ -98,7 +75,50 @@ export default class Data extends Component {
     this.setState({ RINDealsData: { labels: labels, datasets: datasets } });
   }
 
+  getAsylumSeekersDataByYear = (e) => {
+    let year;
+    if (e) {
+      year = e.target.value;
+    }
+    else {
+      year = this.state.selectedYear; // it'll be executed when RINDeals chart is rendered for the first time
+    }
+
+    this.setState({ selectedYear: year });
+    axios.get(`http://popdata.unhcr.org/api/stats/asylum_seekers.json?year=${year}&&country_of_origin=SYR`)
+      .then(res => {
+        console.log(res);
+
+        let labelsOfAsylumCountries = [];
+        let dataOfAppliedCount = [];
+        for (let i = 0; i < 50; i++) {
+          if (!labelsOfAsylumCountries.includes(res.data[i].country_of_asylum_en)) {
+            labelsOfAsylumCountries.push(res.data[i].country_of_asylum_en);
+            dataOfAppliedCount.push(res.data[i].applied_during_year);
+          }
+        }
+
+        let datasets = [{}];
+        datasets[0].data = dataOfAppliedCount;
+        datasets[0].label = "Asylum Applications";
+        datasets[0].backgroundColor = "green";
+        this.setState({ asylumSeekersData: { labels: labelsOfAsylumCountries, datasets: datasets } });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
   render() {
+    const years = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018];
+    let allYears = years.map((year, i) => {
+      return (
+        <option value={year} key={i}>
+          {year}
+        </option>
+      );
+    });
+
     return (
       <div
         className="data fadeInFast"
@@ -119,10 +139,18 @@ export default class Data extends Component {
           </div>
         </header>
         <div className="container">
-          <h3 className="data-heading" style={{ marginTop: 0 }}>The RIN Deals</h3>
-          <PieChart data={this.state.RINDealsData} />
-          <h3 className="data-heading">Statistics of Asylum Seekers from Syria in 2012</h3>
-          <BarChart data={this.state.asylumSeekersData} />
+          <div>
+            <h3 className="data-heading" style={{ marginTop: 0 }}>The RIN Deals</h3>
+            <PieChart data={this.state.RINDealsData} />
+          </div>
+          <div>
+            <h3 className="data-heading">Statistics of Asylum Seekers from Syria in {this.state.selectedYear}</h3>
+            <select name="year" id="year" onChange={this.getAsylumSeekersDataByYear}>
+              <option value={-1}>Select Year</option>
+              {allYears}
+            </select>
+            <BarChart data={this.state.asylumSeekersData} />
+          </div>
         </div>
       </div>
     );
