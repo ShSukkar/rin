@@ -34,3 +34,18 @@ iframe {
   text-align: center;
   margin-top: 70px;
 }
+
+.year-select .preloader {
+  color: var(--color-2);
+  position: absolute;
+  top: 25%;
+  left: 47%;
+}
+
+.data .year-select {
+  display: flex;
+  flex-direction: column;
+   /* align-items: center; */
+  justify-content: center;
+  position: relative; 
+}

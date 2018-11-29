@@ -7,6 +7,7 @@ import BarChart from "./Charts/BarChart/BarChart.component";
 import LineChart from "./Charts/LineChart/LineChart.component";
 import PieChart from "./Charts/PieChart/PieChart.component";
 import HorizontalBarChart from "./Charts/HorizontalBarChart/HorizontalBarChart.component";
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 /*The structure of any chart data object is as the following:
   somethingData: {
@@ -25,7 +26,8 @@ export default class Data extends Component {
     this.state = {
       asylumSeekersData: {},
       RINDealsData: {},
-      selectedYear: 2012
+      selectedYear: 2012,
+      isLoading: true
     }
   }
 
@@ -76,33 +78,27 @@ export default class Data extends Component {
   }
 
   getAsylumSeekersDataByYear = (e) => {
-    let year;
-    if (e) {
-      year = e.target.value;
-    }
-    else {
-      year = this.state.selectedYear; // it'll be executed when RINDeals chart is rendered for the first time
-    }
+    const year = e ? e.target.value : this.state.selectedYear;
+    this.setState({ selectedYear: year, isLoading: true });
 
-    this.setState({ selectedYear: year });
     axios.get(`http://popdata.unhcr.org/api/stats/asylum_seekers.json?year=${year}&&country_of_origin=SYR`)
       .then(res => {
-        console.log(res);
-
-        let labelsOfAsylumCountries = [];
-        let dataOfAppliedCount = [];
-        for (let i = 0; i < 50; i++) {
-          if (!labelsOfAsylumCountries.includes(res.data[i].country_of_asylum_en)) {
-            labelsOfAsylumCountries.push(res.data[i].country_of_asylum_en);
-            dataOfAppliedCount.push(res.data[i].applied_during_year);
+        this.setState({ isLoading: false }, () => {
+          let labelsOfAsylumCountries = [];
+          let dataOfAppliedCount = [];
+          for (let i = 0; i < 50; i++) {
+            if (!labelsOfAsylumCountries.includes(res.data[i].country_of_asylum_en)) {
+              labelsOfAsylumCountries.push(res.data[i].country_of_asylum_en);
+              dataOfAppliedCount.push(res.data[i].applied_during_year);
+            }
           }
-        }
 
-        let datasets = [{}];
-        datasets[0].data = dataOfAppliedCount;
-        datasets[0].label = "Asylum Applications";
-        datasets[0].backgroundColor = "green";
-        this.setState({ asylumSeekersData: { labels: labelsOfAsylumCountries, datasets: datasets } });
+          let datasets = [{}];
+          datasets[0].data = dataOfAppliedCount;
+          datasets[0].label = "Asylum Applications";
+          datasets[0].backgroundColor = "green";
+          this.setState({ asylumSeekersData: { labels: labelsOfAsylumCountries, datasets: datasets } });
+        })
       })
       .catch(err => {
         console.log(err);
@@ -110,7 +106,7 @@ export default class Data extends Component {
   }
 
   render() {
-    const years = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018];
+    const years = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017];
     let allYears = years.map((year, i) => {
       return (
         <option value={year} key={i}>
@@ -119,6 +115,7 @@ export default class Data extends Component {
       );
     });
 
+    let { isLoading } = this.state;
     return (
       <div
         className="data fadeInFast"
@@ -149,7 +146,10 @@ export default class Data extends Component {
               <option value={-1}>Select Year</option>
               {allYears}
             </select>
-            <BarChart data={this.state.asylumSeekersData} />
+            <div className="year-select">
+              <CircularProgress className="preloader" size={100} thickness={3} style={{ visibility: isLoading ? "visible" : "hidden" }} />
+              <BarChart data={this.state.asylumSeekersData} />
+            </div>
           </div>
         </div>
       </div>
