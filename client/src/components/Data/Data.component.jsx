@@ -78,7 +78,7 @@ export default class Data extends Component {
   }
 
   getAsylumSeekersDataByYear = (e) => {
-    const year = e ? e.target.value : this.state.selectedYear;
+    const year = e && e.target.value > -1 ? e.target.value : this.state.selectedYear;
     this.setState({ selectedYear: year, isLoading: true });
 
     axios.get(`http://popdata.unhcr.org/api/stats/asylum_seekers.json?year=${year}&&country_of_origin=SYR`)
