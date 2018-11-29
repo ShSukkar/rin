@@ -147,7 +147,7 @@ export default class Data extends Component {
               {allYears}
             </select>
             <div className="year-select">
-              <CircularProgress className="preloader" size={100} thickness={3} style={{ visibility: isLoading ? "visible" : "hidden" }} />
+              <CircularProgress className="preloader" size={"7vw"} thickness={3} style={{ visibility: isLoading ? "visible" : "hidden" }} />
               <BarChart data={this.state.asylumSeekersData} />
             </div>
           </div>
