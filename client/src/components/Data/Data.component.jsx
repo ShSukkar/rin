@@ -24,16 +24,19 @@ export default class Data extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      asylumSeekersData: {},
       RINDealsData: {},
-      selectedYear: 2012,
+      asylumSeekersData: {},
+      resettlementData: {},
+      asylumSeekersSelectedYear: 2012,
+      resettlementSelectedYear: 2012,
       isLoading: true
     }
   }
 
   componentWillMount() {
-    this.getAsylumSeekersDataByYear();
     this.getRINDealsData();
+    this.getAsylumSeekersDataByYear();
+    this.getResettlementData();
   }
 
   componentDidMount() { }
@@ -78,20 +81,20 @@ export default class Data extends Component {
   }
 
   getAsylumSeekersDataByYear = (e) => {
-    const year = e && e.target.value > -1 ? e.target.value : this.state.selectedYear;
-    this.setState({ selectedYear: year, isLoading: true });
+    const year = e && e.target.value > -1 ? e.target.value : this.state.asylumSeekersSelectedYear;
+    this.setState({ asylumSeekersSelectedYear: year, isLoading: true });
 
     axios.get(`http://popdata.unhcr.org/api/stats/asylum_seekers.json?year=${year}&&country_of_origin=SYR`)
       .then(res => {
         this.setState({ isLoading: false }, () => {
           let labelsOfAsylumCountries = [];
           let dataOfAppliedCount = [];
-          let dataOfRejectedCount = [];
+          let dataOfAccepteddCount = [];
           for (let i = 0; i < 50; i++) {
             if ((!labelsOfAsylumCountries.includes(res.data[i].country_of_asylum_en)) && (res.data[i].applied_during_year > 4)) {
               labelsOfAsylumCountries.push(res.data[i].country_of_asylum_en);
               dataOfAppliedCount.push(res.data[i].applied_during_year);
-              dataOfRejectedCount.push(res.data[i].rejected);
+              dataOfAccepteddCount.push(res.data[i].applied_during_year - res.data[i].rejected);
             }
           }
 
@@ -99,8 +102,8 @@ export default class Data extends Component {
           datasets[0].data = dataOfAppliedCount;
           datasets[0].label = "Asylum Applications";
           datasets[0].backgroundColor = "green";
-          datasets[1].data = dataOfRejectedCount;
-          datasets[1].label = "Rejected Applications";
+          datasets[1].data = dataOfAccepteddCount;
+          datasets[1].label = "Accepted Applications";
           datasets[1].backgroundColor = "blue";
           this.setState({ asylumSeekersData: { labels: labelsOfAsylumCountries, datasets: datasets } });
         })
@@ -108,6 +111,38 @@ export default class Data extends Component {
       .catch(err => {
         console.log(err);
       });
+  }
+
+  getResettlementData = () => {
+    const labels = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018];
+    const countriesOfAsylum = ["AUS", "CAN", "GBR", "DEU", "USA"];
+    const colors = ["pink", "green", "red", "blue", "lime", "maroon", "teal", "aqua", "purple", "yellow", "olive"];
+    let datasets = [];
+    for (let i = 0; i < countriesOfAsylum.length; i++) {
+      datasets.push({});
+      datasets[i].label = countriesOfAsylum[i];
+      datasets[i].backgroundColor = colors[i];
+      datasets[i].borderColor = colors[i];
+      datasets[i].fill = false;
+      datasets[i].data = [];
+
+      for (let j = 0; j < labels.length; j++) {
+        axios.get(`http://popdata.unhcr.org/api/stats/resettlement.json?year=${labels[j]}&country_of_asylum=${countriesOfAsylum[i]}`)
+          .then(res => {
+            let totalValue = 0;
+            for (let r = 0; r < res.data.length; r++) {
+              if (typeof res.data[r].value === "number") {
+                totalValue += res.data[r].value;
+              }
+            }
+            datasets[i].data.push(totalValue);
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      }
+    }
+    this.setState({ resettlementData: { labels: labels, datasets: datasets } });
   }
 
   render() {
@@ -146,7 +181,7 @@ export default class Data extends Component {
             <PieChart data={this.state.RINDealsData} />
           </div>
           <div>
-            <h3 className="data-heading">Statistics of Asylum Seekers from Syria in {this.state.selectedYear}</h3>
+            <h3 className="data-heading">UNHCR Statistics of Asylum Seekers from Syria in {this.state.asylumSeekersSelectedYear}</h3>
             <select name="year" id="year" onChange={this.getAsylumSeekersDataByYear}>
               <option value={-1}>Select Year</option>
               {allYears}
@@ -155,6 +190,10 @@ export default class Data extends Component {
               <CircularProgress className="preloader" size={"7vw"} thickness={3} style={{ visibility: isLoading ? "visible" : "hidden" }} />
               <BarChart data={this.state.asylumSeekersData} />
             </div>
+          </div>
+          <div>
+            <h3 className="data-heading">UNHCR Statistics of Resettlement (2010 - 2018)</h3>
+            <LineChart data={this.state.resettlementData} />
           </div>
         </div>
       </div>

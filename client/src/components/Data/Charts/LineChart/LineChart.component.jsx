@@ -5,17 +5,7 @@ import { Line } from 'react-chartjs-2';
 export default class LineChart extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            chartData: {
-                labels: [],
-                datasets: [{
-                    label: this.props.datasestLabel,
-                    data: [],
-                    backgroundColor: 'green',
-                    //backgroundColor: []
-                }]
-            }
-        }
+        this.state = {}
     }
 
     componentWillMount() { }
@@ -28,7 +18,7 @@ export default class LineChart extends Component {
         return (
             <div className="lineChart">
                 <Line
-                    data={this.state.chartData}
+                    data={this.props.data}
                     options={{
                         title: {
                             display: true,
