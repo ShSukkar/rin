@@ -27,8 +27,10 @@ export default class Data extends Component {
       RINDealsData: {},
       asylumSeekersData: {},
       resettlementData: {},
+      demographicsData: {},
       asylumSeekersSelectedYear: 2012,
-      resettlementSelectedYear: 2012,
+      demographicsSelectedYear: 2012,
+      demographicsSelectedCountry: "Syrian Arab Rep",
       isLoading: true
     }
   }
@@ -37,6 +39,7 @@ export default class Data extends Component {
     this.getRINDealsData();
     this.getAsylumSeekersDataByYear();
     this.getResettlementData();
+    this.getDemographicsData();
   }
 
   componentDidMount() { }
@@ -145,6 +148,33 @@ export default class Data extends Component {
     this.setState({ resettlementData: { labels: labels, datasets: datasets } });
   }
 
+  getDemographicsData = () => {
+    let labels = [];
+    let femaleValueData = [];
+    let maleValueData = [];
+    axios.get(`http://popdata.unhcr.org/api/stats/demographics.json?year=2013&country_of_residence=SYR`)
+      .then(res => {
+        res.data.forEach(oneData => {
+          labels.push(oneData.location_name);
+          femaleValueData.push(oneData.female_total_value);
+          maleValueData.push(oneData.male_total_value);
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+
+    let datasets = [{}, {}];
+    datasets[0].data = femaleValueData;
+    datasets[0].label = "Female Total Value";
+    datasets[0].backgroundColor = "pink";
+    datasets[1].data = maleValueData;
+    datasets[1].label = "Male Total Value";
+    datasets[1].backgroundColor = "#ADD8E6";
+
+    this.setState({ demographicsData: { labels: labels, datasets: datasets } });
+  }
+
   render() {
     const years = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017];
     let allYears = years.map((year, i) => {
@@ -155,7 +185,7 @@ export default class Data extends Component {
       );
     });
 
-    let { isLoading } = this.state;
+    let { isLoading, demographicsSelectedYear, demographicsSelectedCountry } = this.state;
     return (
       <div
         className="data fadeInFast"
@@ -194,6 +224,10 @@ export default class Data extends Component {
           <div>
             <h3 className="data-heading">UNHCR Statistics of Resettlement (2010 - 2018)</h3>
             <LineChart data={this.state.resettlementData} />
+          </div>
+          <div>
+            <h3 className="data-heading">UNHCR Statistics of Demographics in {demographicsSelectedCountry} ({demographicsSelectedYear})</h3>
+            <HorizontalBarChart data={this.state.demographicsData} />
           </div>
         </div>
       </div>

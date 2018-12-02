@@ -5,17 +5,7 @@ import { HorizontalBar } from 'react-chartjs-2';
 export default class HorizontalBarChart extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            chartData: {
-                labels: [],
-                datasets: [{
-                    label: this.props.datasestLabel,
-                    data: [],
-                    backgroundColor: 'green',
-                    //backgroundColor: []
-                }]
-            }
-        }
+        this.state = {}
     }
 
     componentWillMount() { }
@@ -28,7 +18,7 @@ export default class HorizontalBarChart extends Component {
         return (
             <div className="horizontalBarChart">
                 <HorizontalBar
-                    data={this.state.chartData}
+                    data={this.props.data}
                     options={{
                         title: {
                             display: true,
@@ -37,7 +27,7 @@ export default class HorizontalBarChart extends Component {
                         },
                         legend: {
                             display: true,
-                            position: 'right',
+                            // position: 'left',
                             labels: {
                                 fontColor: '#000'
                             }
