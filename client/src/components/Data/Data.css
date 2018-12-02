@@ -48,3 +48,8 @@ iframe {
   justify-content: center;
   position: relative; 
 }
+
+.asylum-seekers-chart select {
+  position: relative;
+  left: 4%;
+}

@@ -115,7 +115,7 @@ export default class Data extends Component {
 
   getResettlementData = () => {
     const labels = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018];
-    const countriesOfAsylum = ["AUS", "CAN", "GBR", "DEU", "USA"];
+    const countriesOfAsylum = ["AUS", "CAN", "DEU", "GBR", "USA"];
     const colors = ["rgb(232, 51, 56)", "rgb(141, 194, 111)", "rgb(100, 179, 244)", "rgb(100, 65, 165)", "rgb(255, 144, 104)"];
     let datasets = [];
     for (let i = 0; i < countriesOfAsylum.length; i++) {
@@ -180,7 +180,7 @@ export default class Data extends Component {
             <h3 className="data-heading" style={{ marginTop: 0 }}>The RIN Deals</h3>
             <PieChart data={this.state.RINDealsData} />
           </div>
-          <div>
+          <div className="asylum-seekers-chart">
             <h3 className="data-heading">UNHCR Statistics of Asylum Seekers from Syria in {this.state.asylumSeekersSelectedYear}</h3>
             <select name="year" id="year" onChange={this.getAsylumSeekersDataByYear}>
               <option value={-1}>Select Year</option>

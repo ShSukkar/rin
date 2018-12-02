@@ -24,8 +24,8 @@ export default class BarChart extends Component {
                             fontSize: 25
                         },
                         legend: {
-                            display: false,
-                            position: 'right',
+                            display: true,
+                            position: 'left',
                             labels: {
                                 fontColor: '#000'
                             }
