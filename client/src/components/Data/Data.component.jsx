@@ -116,7 +116,7 @@ export default class Data extends Component {
   getResettlementData = () => {
     const labels = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018];
     const countriesOfAsylum = ["AUS", "CAN", "GBR", "DEU", "USA"];
-    const colors = ["pink", "green", "red", "blue", "lime", "maroon", "teal", "aqua", "purple", "yellow", "olive"];
+    const colors = ["rgb(232, 51, 56)", "rgb(141, 194, 111)", "rgb(100, 179, 244)", "rgb(100, 65, 165)", "rgb(255, 144, 104)"];
     let datasets = [];
     for (let i = 0; i < countriesOfAsylum.length; i++) {
       datasets.push({});
