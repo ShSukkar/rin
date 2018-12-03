@@ -30,9 +30,10 @@ export default class Data extends Component {
       demographicsData: {},
       asylumSeekersSelectedYear: 2012,
       demographicsSelectedYear: 2012,
-      demographicsSelectedCountry: "Syrian Arab Rep",
+      demographicsSelectedCountry: "Syrian Arab Republic",
       isLoadingAsylumSeekersData: true,
-      isLoadingDmographicsData: true
+      isLoadingDmographicsData: true,
+      allCountries: []
     }
   }
 
@@ -41,9 +42,21 @@ export default class Data extends Component {
     this.getAsylumSeekersDataByYear();
     this.getResettlementData();
     this.getDemographicsData();
+    this.getAllCounries();
   }
 
   componentDidMount() { }
+
+  getAllCounries = () => {
+    axios.get("https://restcountries.eu/rest/v2/all")
+      .then(res => {
+        this.setState({ allCountries: res.data })
+      })
+      .catch(err => {
+        console.log(err);
+
+      })
+  }
 
   scrollToTop = () => {
     document.querySelector(".library").scrollIntoView({
@@ -181,6 +194,8 @@ export default class Data extends Component {
   }
 
   render() {
+    let { allCountries, isLoadingAsylumSeekersData, isLoadingDmographicsData, demographicsSelectedYear, demographicsSelectedCountry } = this.state;
+
     const years = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017];
     let allYears = years.map((year, i) => {
       return (
@@ -190,7 +205,14 @@ export default class Data extends Component {
       );
     });
 
-    let { isLoadingAsylumSeekersData, isLoadingDmographicsData, demographicsSelectedYear, demographicsSelectedCountry } = this.state;
+    let countries = allCountries.map((country, i) => {
+      return (
+        <option value={country.name} key={i}>
+          {country.name}
+        </option>
+      )
+    })
+
     return (
       <div
         className="data fadeInFast"
@@ -235,6 +257,10 @@ export default class Data extends Component {
             <select onChange={this.getDemographicsData}>
               <option value={-1}>Select Year</option>
               {allYears}
+            </select>
+            <select>
+              <option value={-1}>Select country</option>
+              {countries}
             </select>
             <div className="chart-preloader">
               <CircularProgress className="preloader" size={"7vw"} thickness={3} style={{ visibility: isLoadingDmographicsData ? "visible" : "hidden" }} />
