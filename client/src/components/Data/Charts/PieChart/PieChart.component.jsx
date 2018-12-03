@@ -33,6 +33,7 @@ export default class PieChart extends Component {
                             }
                         }
                     }}
+                // redraw={true}
                 />
             </div>
         )

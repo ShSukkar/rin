@@ -33,6 +33,7 @@ export default class HorizontalBarChart extends Component {
                             }
                         }
                     }}
+                // redraw={true}
                 />
             </div>
         )

@@ -29,27 +29,27 @@ iframe {
   height: 800px;
 }
 
-.data-heading {
+.chart-heading {
   color: var(--color-2);
   text-align: center;
   margin-top: 70px;
 }
 
-.year-select .preloader {
-  color: var(--color-2);
-  position: absolute;
-  top: 25%;
-  left: 47%;
-}
-
-.data .year-select {
+.data .chart-preloader {
   display: flex;
   flex-direction: column;
   justify-content: center;
   position: relative; 
 }
 
-.asylum-seekers-chart select {
+.chart-preloader .preloader {
+  color: var(--color-2);
+  position: absolute;
+  top: 25%;
+  left: 47%;
+}
+
+.asylum-seekers-chart select, .demographics-chart select {
   position: relative;
   left: 4%;
 }

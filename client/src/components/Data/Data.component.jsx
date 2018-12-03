@@ -31,7 +31,8 @@ export default class Data extends Component {
       asylumSeekersSelectedYear: 2012,
       demographicsSelectedYear: 2012,
       demographicsSelectedCountry: "Syrian Arab Rep",
-      isLoading: true
+      isLoadingAsylumSeekersData: true,
+      isLoadingDmographicsData: true
     }
   }
 
@@ -85,11 +86,11 @@ export default class Data extends Component {
 
   getAsylumSeekersDataByYear = (e) => {
     const year = e && e.target.value > -1 ? e.target.value : this.state.asylumSeekersSelectedYear;
-    this.setState({ asylumSeekersSelectedYear: year, isLoading: true });
+    this.setState({ asylumSeekersSelectedYear: year, isLoadingAsylumSeekersData: true });
 
     axios.get(`http://popdata.unhcr.org/api/stats/asylum_seekers.json?year=${year}&&country_of_origin=SYR`)
       .then(res => {
-        this.setState({ isLoading: false }, () => {
+        this.setState({ isLoadingAsylumSeekersData: false }, () => {
           let labelsOfAsylumCountries = [];
           let dataOfAppliedCount = [];
           let dataOfAccepteddCount = [];
@@ -148,31 +149,35 @@ export default class Data extends Component {
     this.setState({ resettlementData: { labels: labels, datasets: datasets } });
   }
 
-  getDemographicsData = () => {
+  getDemographicsData = (e) => {
+    const year = e && e.target.value > -1 ? e.target.value : this.state.demographicsSelectedYear;
+    this.setState({ demographicsSelectedYear: year, isLoadingDmographicsData: true });
+
     let labels = [];
     let femaleValueData = [];
     let maleValueData = [];
-    axios.get(`http://popdata.unhcr.org/api/stats/demographics.json?year=2013&country_of_residence=SYR`)
+    axios.get(`http://popdata.unhcr.org/api/stats/demographics.json?year=${year}&country_of_residence=SYR`)
       .then(res => {
-        res.data.forEach(oneData => {
-          labels.push(oneData.location_name);
-          femaleValueData.push(oneData.female_total_value);
-          maleValueData.push(oneData.male_total_value);
+        this.setState({ isLoadingDmographicsData: false }, () => {
+          res.data.forEach(oneData => {
+            labels.push(oneData.location_name);
+            femaleValueData.push(oneData.female_total_value);
+            maleValueData.push(oneData.male_total_value);
+          });
+          let datasets = [{}, {}];
+          datasets[0].data = femaleValueData;
+          datasets[0].label = "Female Total Value";
+          datasets[0].backgroundColor = "pink";
+          datasets[1].data = maleValueData;
+          datasets[1].label = "Male Total Value";
+          datasets[1].backgroundColor = "#ADD8E6";
+
+          this.setState({ demographicsData: { labels: labels, datasets: datasets } });
         });
       })
       .catch(err => {
         console.log(err);
       });
-
-    let datasets = [{}, {}];
-    datasets[0].data = femaleValueData;
-    datasets[0].label = "Female Total Value";
-    datasets[0].backgroundColor = "pink";
-    datasets[1].data = maleValueData;
-    datasets[1].label = "Male Total Value";
-    datasets[1].backgroundColor = "#ADD8E6";
-
-    this.setState({ demographicsData: { labels: labels, datasets: datasets } });
   }
 
   render() {
@@ -185,7 +190,7 @@ export default class Data extends Component {
       );
     });
 
-    let { isLoading, demographicsSelectedYear, demographicsSelectedCountry } = this.state;
+    let { isLoadingAsylumSeekersData, isLoadingDmographicsData, demographicsSelectedYear, demographicsSelectedCountry } = this.state;
     return (
       <div
         className="data fadeInFast"
@@ -206,28 +211,35 @@ export default class Data extends Component {
           </div>
         </header>
         <div className="container">
-          <div>
-            <h3 className="data-heading" style={{ marginTop: 0 }}>The RIN Deals</h3>
+          <div className="rin-deals-chart">
+            <h3 className="chart-heading" style={{ marginTop: 0 }}>The RIN Deals</h3>
             <PieChart data={this.state.RINDealsData} />
           </div>
           <div className="asylum-seekers-chart">
-            <h3 className="data-heading">UNHCR Statistics of Asylum Seekers from Syria in {this.state.asylumSeekersSelectedYear}</h3>
-            <select name="year" id="year" onChange={this.getAsylumSeekersDataByYear}>
+            <h3 className="chart-heading">UNHCR Statistics of Asylum Seekers from Syria in {this.state.asylumSeekersSelectedYear}</h3>
+            <select onChange={this.getAsylumSeekersDataByYear}>
               <option value={-1}>Select Year</option>
               {allYears}
             </select>
-            <div className="year-select">
-              <CircularProgress className="preloader" size={"7vw"} thickness={3} style={{ visibility: isLoading ? "visible" : "hidden" }} />
+            <div className="chart-preloader">
+              <CircularProgress className="preloader" size={"7vw"} thickness={3} style={{ visibility: isLoadingAsylumSeekersData ? "visible" : "hidden" }} />
               <BarChart data={this.state.asylumSeekersData} />
             </div>
           </div>
-          <div>
-            <h3 className="data-heading">UNHCR Statistics of Resettlement (2010 - 2018)</h3>
+          <div className="resettlement-chart">
+            <h3 className="chart-heading">UNHCR Statistics of Resettlement (2010 - 2018)</h3>
             <LineChart data={this.state.resettlementData} />
           </div>
-          <div>
-            <h3 className="data-heading">UNHCR Statistics of Demographics in {demographicsSelectedCountry} ({demographicsSelectedYear})</h3>
-            <HorizontalBarChart data={this.state.demographicsData} />
+          <div className="demographics-chart">
+            <h3 className="chart-heading">UNHCR Statistics of Demographics in {demographicsSelectedCountry} ({demographicsSelectedYear})</h3>
+            <select onChange={this.getDemographicsData}>
+              <option value={-1}>Select Year</option>
+              {allYears}
+            </select>
+            <div className="chart-preloader">
+              <CircularProgress className="preloader" size={"7vw"} thickness={3} style={{ visibility: isLoadingDmographicsData ? "visible" : "hidden" }} />
+              <HorizontalBarChart data={this.state.demographicsData} />
+            </div>
           </div>
         </div>
       </div>

@@ -33,6 +33,7 @@ export default class LineChart extends Component {
                             }
                         }
                     }}
+                // redraw={true}
                 />
             </div>
         )
