@@ -27,12 +27,13 @@ export default class HorizontalBarChart extends Component {
                         },
                         legend: {
                             display: true,
-                            // position: 'left',
+                            position: 'bottom',
                             labels: {
                                 fontColor: '#000'
                             }
                         }
                     }}
+                    key={Math.random()}
                 // redraw={true}
                 />
             </div>

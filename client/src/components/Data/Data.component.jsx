@@ -228,7 +228,7 @@ export default class Data extends Component {
           </div>
           <div className="resettlement-chart">
             <h3 className="chart-heading">UNHCR Statistics of Resettlement (2010 - 2018)</h3>
-            <LineChart data={this.state.resettlementData} />
+            <LineChart data={this.state.resettlementData} getResettlementData={this.getResettlementData} />
           </div>
           <div className="demographics-chart">
             <h3 className="chart-heading">UNHCR Statistics of Demographics in {demographicsSelectedCountry} ({demographicsSelectedYear})</h3>

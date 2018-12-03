@@ -25,7 +25,7 @@ export default class BarChart extends Component {
                         },
                         legend: {
                             display: true,
-                            // position: 'left',
+                            // position: 'bottom',
                             labels: {
                                 fontColor: '#000'
                             }
@@ -33,6 +33,7 @@ export default class BarChart extends Component {
                     }
                     }
                     height={200}
+                    key={Math.random()}
                 // redraw={true}
                 />
             </div>

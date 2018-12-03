@@ -33,7 +33,7 @@ export default class LineChart extends Component {
                             }
                         }
                     }}
-                // redraw={true}
+                    key={Math.random()}
                 />
             </div>
         )
