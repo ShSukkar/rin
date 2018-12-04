@@ -33,16 +33,17 @@ export default class Data extends Component {
       demographicsSelectedCountry: "Syrian Arab Republic",
       isLoadingAsylumSeekersData: true,
       isLoadingDmographicsData: true,
-      allCountries: []
+      allCountries: [],
+      isAllCountriesRetrieved: false
     }
   }
 
   componentWillMount() {
+    this.getAllCounries();
     this.getRINDealsData();
     this.getAsylumSeekersDataByYear();
     this.getResettlementData();
     this.getDemographicsData();
-    this.getAllCounries();
   }
 
   componentDidMount() { }
@@ -50,11 +51,16 @@ export default class Data extends Component {
   getAllCounries = () => {
     axios.get("https://restcountries.eu/rest/v2/all")
       .then(res => {
-        this.setState({ allCountries: res.data })
+        res.data.forEach((oneData, i) => {
+          this.setState({ allCountries: [...this.state.allCountries, { name: oneData.name, alpha3Code: oneData.alpha3Code }] }, () => {
+            if (i === 249) {
+              this.setState({ isAllCountriesRetrieved: true });
+            }
+          });
+        });
       })
       .catch(err => {
         console.log(err);
-
       })
   }
 
@@ -93,7 +99,6 @@ export default class Data extends Component {
           console.log(err);
         });
     });
-
     this.setState({ RINDealsData: { labels: labels, datasets: datasets } });
   }
 
@@ -123,7 +128,7 @@ export default class Data extends Component {
           datasets[1].label = "Accepted Applications";
           datasets[1].backgroundColor = "blue";
           this.setState({ asylumSeekersData: { labels: labelsOfAsylumCountries, datasets: datasets } });
-        })
+        });
       })
       .catch(err => {
         console.log(err);
@@ -159,18 +164,50 @@ export default class Data extends Component {
           });
       }
     }
-    this.setState({ resettlementData: { labels: labels, datasets: datasets } });
+    this.setState({ resettlementData: { labels, datasets } });
   }
 
-  getDemographicsData = (e) => {
-    const year = e && e.target.value > -1 ? e.target.value : this.state.demographicsSelectedYear;
-    this.setState({ demographicsSelectedYear: year, isLoadingDmographicsData: true });
+  findCountryAlpha3Code = (countryName) => {
+    if (this.state.isAllCountriesRetrieved) {
+      for (let i = 0; i < this.state.allCountries.length; i++) {
+        if (this.state.allCountries[i].name === countryName) {
+          return this.state.allCountries[i].alpha3Code;
+        }
+      }
+    }
+    else {
+      return "SYR";
+    }
+  }
 
-    let labels = [];
-    let femaleValueData = [];
-    let maleValueData = [];
-    axios.get(`http://popdata.unhcr.org/api/stats/demographics.json?year=${year}&country_of_residence=SYR`)
+  //This function is triggered in two events; either in select year event || in select country event
+  getDemographicsData = (e) => {
+    let year, country, alpha3Code;
+    //check if the event triggered by select year
+    if (e && Number(e.target.value) > -1) {
+      year = e.target.value
+      country = this.state.demographicsSelectedCountry;
+    }
+    //check if the event triggered by select country
+    else if (e && e.target.value) {
+      year = this.state.demographicsSelectedYear;
+      country = e.target.value;
+    }
+    //the initial values when the function is called in componentWillMount
+    else {
+      year = this.state.demographicsSelectedYear;
+      country = this.state.demographicsSelectedCountry;
+    }
+    this.setState({ demographicsSelectedYear: year, demographicsSelectedCountry: country, isLoadingDmographicsData: true });
+    //find the alpha3Code of the country
+    alpha3Code = this.findCountryAlpha3Code(country);
+
+    axios.get(`http://popdata.unhcr.org/api/stats/demographics.json?year=${year}&country_of_residence=${alpha3Code}`)
       .then(res => {
+        let labels = [];
+        let femaleValueData = [];
+        let maleValueData = [];
+
         this.setState({ isLoadingDmographicsData: false }, () => {
           res.data.forEach(oneData => {
             labels.push(oneData.location_name);
@@ -185,7 +222,7 @@ export default class Data extends Component {
           datasets[1].label = "Male Total Value";
           datasets[1].backgroundColor = "#ADD8E6";
 
-          this.setState({ demographicsData: { labels: labels, datasets: datasets } });
+          this.setState({ demographicsData: { labels, datasets } });
         });
       })
       .catch(err => {
@@ -258,7 +295,7 @@ export default class Data extends Component {
               <option value={-1}>Select Year</option>
               {allYears}
             </select>
-            <select>
+            <select onChange={this.getDemographicsData}>
               <option value={-1}>Select country</option>
               {countries}
             </select>
