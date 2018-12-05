@@ -6,8 +6,7 @@ class Filter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      countries: [],
-      filterToggled: false
+      countries: []
     };
   }
 
@@ -23,13 +22,6 @@ class Filter extends React.Component {
     });
   };
 
-  toggleFilter = () => {
-    const { filterToggled } = this.state;
-    this.setState({
-      filterToggled: !filterToggled
-    });
-  };
-
   render() {
     const countries = this.state.countries.map(country => {
       return (
@@ -39,17 +31,17 @@ class Filter extends React.Component {
       );
     });
 
-    let show = this.state.filterToggled ? " show" : "";
+    let show = this.props.isFilterToggled ? " show" : "";
     return (
       <div className={"filter" + show}>
-        <a onClick={this.toggleFilter}>
+        <a onClick={this.props.toggleFilter}>
           <i className="fas fa-search" /> Filter
         </a>
 
         <a
           className="close"
-          onClick={this.toggleFilter}
-          style={{ display: this.state.filterToggled ? "block" : "none" }}
+          onClick={this.props.toggleFilter}
+          style={{ display: this.props.isFilterToggled ? "block" : "none" }}
         >
           <i className="fas fa-times" />
         </a>
@@ -130,7 +122,7 @@ class Filter extends React.Component {
         <button
           className="btn"
           onClick={() => {
-            this.toggleFilter();
+            this.props.toggleFilter();
             this.props.fetchProjects();
           }}
         >

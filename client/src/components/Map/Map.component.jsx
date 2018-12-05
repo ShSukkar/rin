@@ -19,7 +19,8 @@ export default class Map extends Component {
     filterOptions: {},
     projects: [],
     projectsInfo: [],
-    currentProject: {}
+    currentProject: {},
+    isFilterToggled: false
   };
 
   componentWillMount() {
@@ -102,7 +103,15 @@ export default class Map extends Component {
     });
   };
 
+  toggleFilter = () => {
+    const { isFilterToggled } = this.state;
+    this.setState({
+      isFilterToggled: !isFilterToggled
+    });
+  };
+
   render() {
+    let { isFilterToggled } = this.state;
     const dots = this.state.projects.map((project, key) => {
       return (
         <Dot
@@ -125,8 +134,10 @@ export default class Map extends Component {
           filter={this.setFilterOptions}
           fetchProjects={this.fetchProjects}
           options={this.state.filterOptions}
+          isFilterToggled={this.state.isFilterToggled}
+          toggleFilter={this.toggleFilter}
         />
-        <Link to="/add-project" className="map-add-project-btn">
+        <Link to="/add-project" className="map-add-project-btn" style={{ visibility: isFilterToggled ? "hidden" : "visible" }}>
           <i className="fas fa-plus" />
           Add Your Project
         </Link>
