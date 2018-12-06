@@ -19,7 +19,7 @@ export default class Navbar extends Component {
   }
 
   //start counter
-  startCounter = () => {};
+  startCounter = () => { };
 
   onMouseMove = e => {
     const mousePosition = e.clientX;

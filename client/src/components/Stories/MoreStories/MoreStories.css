@@ -1,5 +1,6 @@
 .more-stories {
   padding: 100px;
+  position: relative;
 }
 
 .story-card {

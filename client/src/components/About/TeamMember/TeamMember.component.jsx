@@ -16,7 +16,8 @@ export default props => {
   return (
     <div className="team-member">
       <figure class="effect-chico">
-        <img src={info.img} alt="img15" />
+        <img src={info.img} alt="img15" style={{ height: "150px" }} />
+        {/* <div className="tt" style={{ backgroundImage: `url(${info.img})`, backgroundSize: "cover", height: "120px" }} /> */}
         <figcaption>
           <p>
             {info.title}
