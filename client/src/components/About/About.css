@@ -102,6 +102,10 @@
   transform: translateY(10vh);
 }
 
+.go-down i, .back-to-top i {
+  margin: 0;
+}
+
 .arrow-btn i {
   color: var(--color-2);
 }
