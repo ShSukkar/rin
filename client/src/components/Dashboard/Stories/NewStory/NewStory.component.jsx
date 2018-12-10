@@ -37,6 +37,19 @@ const SDGs = [
   "Zero-Hunger"
 ];
 
+const editorStyle = {
+  border: '1px solid var(--color-3)',
+  padding: '5px',
+  borderRadius: '2px',
+  height: '300px',
+  width: '100%',
+  marginBottom: '20px'
+};
+
+const toolbarStyle = {
+  border: '1px solid var(--color-3)'
+};
+
 export default class NewProject extends Component {
   constructor(props) {
     super(props);
@@ -114,7 +127,6 @@ export default class NewProject extends Component {
   };
 
   addStory = e => {
-    let { editorState } = this.state;
     e.preventDefault();
     let storyData = {
       title: this.state.title,
@@ -205,6 +217,7 @@ export default class NewProject extends Component {
             placeholder="Story Title"
             id="story-title"
             onChange={this.onChange}
+            style={{}}
           />
           <input
             type="text"
@@ -214,12 +227,11 @@ export default class NewProject extends Component {
             onChange={this.onChange}
           />
           <Editor
-            placeholder="Type yourtext here ..."
+            placeholder="Type your text here ..."
             editorState={editorState}
-            // toolbarClassName="toolbarClassName"
-            wrapperClassName="demo-wrapper"
-            editorClassName="demo-editor"
             onEditorStateChange={this.editTextContent}
+            editorStyle={editorStyle}
+            toolbarStyle={toolbarStyle}
           />
           <select name="lens" id="lens" onChange={this.onChange}>
             <option>Select Lens</option>
