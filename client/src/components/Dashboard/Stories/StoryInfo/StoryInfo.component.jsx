@@ -1,6 +1,10 @@
 import React, { Component } from "react";
 import axios from "axios";
+import draftToHtml from 'draftjs-to-html';
+import renderHTML from 'react-render-html';
 import "./StoryInfo.css";
+
+const content = { "entityMap": {}, "blocks": [{ "key": "637gr", "text": "Initialized from content state.", "type": "unstyled", "depth": 0, "inlineStyleRanges": [], "entityRanges": [], "data": {} }] };
 
 export default class StoryInfo extends Component {
   constructor(props) {
@@ -9,8 +13,10 @@ export default class StoryInfo extends Component {
       id: this.props.match.params.id,
       story: {
         imgs: [],
-        SDGs: []
-      }
+        SDGs: [],
+        text: ""
+      },
+      myText: ""
     };
   }
 
@@ -26,11 +32,16 @@ export default class StoryInfo extends Component {
     axios.get(`/api/stories/${id}`).then(res => {
       this.setState({
         story: res.data[0]
+      }, () => {
+        this.setState({ story: { ...this.state.story, text: draftToHtml(JSON.parse(this.state.story.text)) } });
+        // this.setState({ myText: renderHTML(draftToHtml(JSON.parse(this.state.story.text))) });
       });
     });
   };
 
   render() {
+    const { contentState } = this.state;
+
     let SDGs = this.state.story.SDGs.map(sdg => {
       return (
         <li>
@@ -59,7 +70,9 @@ export default class StoryInfo extends Component {
           <tr>
             <th>Story Details</th>
             <td>
-              <p className="p-theme-1-admin-info">{this.state.story.text}</p>
+              <div>
+                {renderHTML(this.state.story.text)}
+              </div>
             </td>
           </tr>
           <tr>
