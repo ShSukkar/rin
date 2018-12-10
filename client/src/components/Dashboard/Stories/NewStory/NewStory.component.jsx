@@ -8,9 +8,7 @@ import { MenuList } from "@material-ui/core";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import "../../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { EditorState, convertToRaw } from 'draft-js';
-import { Editor } from 'react-draft-wysiwyg';
+import MyEditor from "../../../general-components/MyEditor/MyEditor.component";
 
 const lenses = [
   "Refugee-Owned",
@@ -37,19 +35,6 @@ const SDGs = [
   "Zero-Hunger"
 ];
 
-const editorStyle = {
-  border: '1px solid var(--color-3)',
-  padding: '5px',
-  borderRadius: '2px',
-  height: '300px',
-  width: '100%',
-  marginBottom: '20px'
-};
-
-const toolbarStyle = {
-  border: '1px solid var(--color-3)'
-};
-
 export default class NewProject extends Component {
   constructor(props) {
     super(props);
@@ -61,8 +46,7 @@ export default class NewProject extends Component {
       text: {},
       img: "",
       loading: false,
-      formValid: false,
-      editorState: EditorState.createEmpty()
+      formValid: false
     };
   }
 
@@ -179,13 +163,11 @@ export default class NewProject extends Component {
     });
   };
 
-  editTextContent = (editorState) => {
-    console.log(this.state.editorState.getCurrentContent());
-    this.setState({ editorState, text: convertToRaw(editorState.getCurrentContent()) });
+  editText = (text) => {
+    this.setState({ text });
   }
 
   render() {
-    let { editorState } = this.state;
     let lensesUI = lenses.map((lens, i) => {
       return (
         <option value={lens} key={i}>
@@ -217,7 +199,6 @@ export default class NewProject extends Component {
             placeholder="Story Title"
             id="story-title"
             onChange={this.onChange}
-            style={{}}
           />
           <input
             type="text"
@@ -226,13 +207,7 @@ export default class NewProject extends Component {
             id="story-pre_description"
             onChange={this.onChange}
           />
-          <Editor
-            placeholder="Type your text here ..."
-            editorState={editorState}
-            onEditorStateChange={this.editTextContent}
-            editorStyle={editorStyle}
-            toolbarStyle={toolbarStyle}
-          />
+          <MyEditor editText={this.editText} />
           <select name="lens" id="lens" onChange={this.onChange}>
             <option>Select Lens</option>
             {lensesUI}
