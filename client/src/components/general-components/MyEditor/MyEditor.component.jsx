@@ -21,7 +21,6 @@ export default class MyEditor extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            text: "",
             editorState: EditorState.createEmpty()
         }
     }

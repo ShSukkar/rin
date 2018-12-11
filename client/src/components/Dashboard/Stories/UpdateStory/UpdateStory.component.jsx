@@ -8,6 +8,25 @@ import { MenuList } from "@material-ui/core";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import "../../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
+import { EditorState, convertToRaw, ContentState, convertFromRaw } from 'draft-js';
+import { Editor } from 'react-draft-wysiwyg';
+import htmlToDraft from 'html-to-draftjs';
+import draftToHtml from 'draftjs-to-html';
+
+
+const editorStyle = {
+  border: '1px solid var(--color-3)',
+  padding: '5px',
+  borderRadius: '2px',
+  height: '300px',
+  width: '100%',
+  marginBottom: '20px'
+};
+
+const toolbarStyle = {
+  border: '1px solid var(--color-3)'
+};
 
 const lenses = [
   "Refugee-Owned",
@@ -46,7 +65,11 @@ export default class UpdateStory extends Component {
       text: "",
       imgs: [],
       SDGs: [],
-      loading: false
+      loading: false,
+      editorState: "",//EditorState.createEmpty(),
+      myText: {},
+      isEditorChanged: false
+      // contentState: {}
     };
   }
 
@@ -101,11 +124,27 @@ export default class UpdateStory extends Component {
             text: res.data[0]["text"],
             imgs: res.data[0]["imgs"],
             SDGs: res.data[0]["SDGs"]
-          });
-        }
-      );
-    });
-  };
+          }, () => {
+            const html = draftToHtml(JSON.parse(this.state.text));
+            const contentBlock = htmlToDraft(html);
+            const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks);
+            const editorState = EditorState.createWithContent(contentState);
+            this.setState({ editorState });
+          })
+        })
+    })
+  }
+
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   console.log(this.state.isEditorChanged, nextState.isEditorChanged);
+
+  //   if (this.state.isEditorChanged !== nextState.isEditorChanged) {
+  //     return true;
+  //   }
+  //   else {
+  //     return false;
+  //   }
+  // }
 
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value }, () => {
@@ -188,18 +227,24 @@ export default class UpdateStory extends Component {
 
     axios
       .put(`/api/stories/${this.state.id}`, storyData)
-      .then(function(response) {
+      .then(function (response) {
         document.querySelector(".done-img").style.display = "flex";
         setTimeout(() => {
           document.querySelector(".done-img").style.display = "none";
         }, 3000);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error);
       });
   };
 
+  onEditorStateChange = (editorState) => {
+    this.setState({ editorState });
+  }
+
   render() {
+    let { editorState, contentState } = this.state;
+
     let lensesUI = lenses.map((lens, i) => {
       if (lens === this.state.lens) {
         return (
@@ -250,14 +295,12 @@ export default class UpdateStory extends Component {
             onChange={this.onChange}
           />
           <label htmlFor="story-text">story text</label>
-          <textarea
-            rows="4"
-            cols="50"
-            type="text"
-            name="text"
-            id="story-text"
-            value={this.state.text[0]}
-            onChange={this.onChangeText}
+          <Editor
+            placeholder="Type your text here ..."
+            editorState={editorState}
+            onEditorStateChange={this.onEditorStateChange}
+            editorStyle={editorStyle}
+            toolbarStyle={toolbarStyle}
           />
           <select name="lens" id="lens" onChange={this.onChange}>
             <option>Select Lens</option>
