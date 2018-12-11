@@ -183,14 +183,6 @@ export default class UpdateStory extends Component {
     });
   };
 
-  onChangeText = e => {
-    let txtArr = [...this.state.text];
-    txtArr[0] = e.target.value;
-    this.setState({ text: txtArr }, () => {
-      this.checkButtonAvailability();
-    });
-  };
-
   updateStory = e => {
     e.preventDefault();
 
@@ -198,7 +190,7 @@ export default class UpdateStory extends Component {
       title: this.state.title,
       pre_description: this.state.pre_description,
       lens: this.state.lens,
-      text: this.state.text,
+      text: JSON.stringify(this.state.text),
       imgs: this.state.imgs,
       SDGs: this.state.SDGs
     };
@@ -217,7 +209,9 @@ export default class UpdateStory extends Component {
   };
 
   editText = (text) => {
-    this.setState({ text });
+    this.setState({ text }, () => {
+      this.checkButtonAvailability();
+    });
   }
 
   render() {

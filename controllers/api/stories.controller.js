@@ -169,7 +169,7 @@ module.exports.updateStory = (req, res) => {
   let qry = `UPDATE stories
                    SET title="${data.title}", pre_description="${
     data.pre_description
-    }", lens="${data.lens}", text="${data.text}", imgs='${data.imgs}', SDGs='${
+    }", lens="${data.lens}", text='${data.text}', imgs='${data.imgs}', SDGs='${
     data.SDGs
     }'
                    WHERE id=${req.params.id};`;
