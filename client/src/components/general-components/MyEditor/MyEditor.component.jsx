@@ -25,7 +25,7 @@ export default class MyEditor extends Component {
         }
     }
 
-    editTextContent = (editorState) => {
+    onEditorStateChange = (editorState) => {
         this.setState({ editorState }, () => {
             const text = convertToRaw(editorState.getCurrentContent());
             this.props.editText(text);
@@ -40,7 +40,7 @@ export default class MyEditor extends Component {
                 <Editor
                     placeholder="Type your text here ..."
                     editorState={editorState}
-                    onEditorStateChange={this.editTextContent}
+                    onEditorStateChange={this.onEditorStateChange}
                     editorStyle={editorStyle}
                     toolbarStyle={toolbarStyle}
                 />
