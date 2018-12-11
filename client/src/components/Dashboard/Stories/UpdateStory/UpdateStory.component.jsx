@@ -8,11 +8,7 @@ import { MenuList } from "@material-ui/core";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import "../../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css"
-import { EditorState, convertToRaw, ContentState, convertFromRaw } from 'draft-js';
-import { Editor } from 'react-draft-wysiwyg';
-import htmlToDraft from 'html-to-draftjs';
-import draftToHtml from 'draftjs-to-html';
+import MyEditor from "../../../general-components/MyEditor/MyEditor.component";
 
 
 const editorStyle = {
@@ -66,10 +62,7 @@ export default class UpdateStory extends Component {
       imgs: [],
       SDGs: [],
       loading: false,
-      editorState: "",//EditorState.createEmpty(),
-      myText: {},
-      isEditorChanged: false
-      // contentState: {}
+      isDataReceived: false
     };
   }
 
@@ -125,26 +118,11 @@ export default class UpdateStory extends Component {
             imgs: res.data[0]["imgs"],
             SDGs: res.data[0]["SDGs"]
           }, () => {
-            const html = draftToHtml(JSON.parse(this.state.text));
-            const contentBlock = htmlToDraft(html);
-            const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks);
-            const editorState = EditorState.createWithContent(contentState);
-            this.setState({ editorState });
+            this.setState({ isDataReceived: true });
           })
         })
     })
   }
-
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   console.log(this.state.isEditorChanged, nextState.isEditorChanged);
-
-  //   if (this.state.isEditorChanged !== nextState.isEditorChanged) {
-  //     return true;
-  //   }
-  //   else {
-  //     return false;
-  //   }
-  // }
 
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value }, () => {
@@ -238,12 +216,12 @@ export default class UpdateStory extends Component {
       });
   };
 
-  onEditorStateChange = (editorState) => {
-    this.setState({ editorState });
+  editText = (text) => {
+    this.setState({ text });
   }
 
   render() {
-    let { editorState, contentState } = this.state;
+    let { text } = this.state;
 
     let lensesUI = lenses.map((lens, i) => {
       if (lens === this.state.lens) {
@@ -275,77 +253,76 @@ export default class UpdateStory extends Component {
       );
     });
 
-    return (
-      <Paper className="admin-form">
-        <form method="POST" onSubmit={this.updateStory}>
-          <label htmlFor="story-title">story title</label>
-          <input
-            type="text"
-            name="title"
-            id="story-title"
-            value={this.state.title}
-            onChange={this.onChange}
-          />
-          <label htmlFor="story-pre_description">story pre-description</label>{" "}
-          <input
-            type="text"
-            name="pre_description"
-            id="story-pre_description"
-            value={this.state.pre_description}
-            onChange={this.onChange}
-          />
-          <label htmlFor="story-text">story text</label>
-          <Editor
-            placeholder="Type your text here ..."
-            editorState={editorState}
-            onEditorStateChange={this.onEditorStateChange}
-            editorStyle={editorStyle}
-            toolbarStyle={toolbarStyle}
-          />
-          <select name="lens" id="lens" onChange={this.onChange}>
-            <option>Select Lens</option>
-            {lensesUI}
-          </select>
-          <br />
-          <ExpansionPanel id="checkboxes">
-            <ExpansionPanelSummary>
-              <p>Select SDGs</p>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-              <MenuList className="menu-full-width">{SDGsUI}</MenuList>
-            </ExpansionPanelDetails>
-          </ExpansionPanel>
-          <br />
-          <label htmlFor="image">Story image</label>
-          <img
-            className="admin-img-update"
-            src={this.state.imgs[0]}
-            alt="uploaded"
-          />
-          <input
-            type="file"
-            name="img"
-            accept="image/*"
-            onChange={this.onChangeImg}
-          />
-          <img
-            src="/imgs/loading.gif"
-            alt=""
-            className="loading"
-            style={{ display: this.state.loading ? "block" : "none" }}
-          />
-          <button
-            type="submit"
-            className="btn"
-            disabled={!this.state.formValid}
-          >
-            <i className="fas fa-edit" /> Update Story
+    if (this.state.isDataReceived) {
+      return (
+        <Paper className="admin-form">
+          <form method="POST" onSubmit={this.updateStory}>
+            <label htmlFor="story-title">story title</label>
+            <input
+              type="text"
+              name="title"
+              id="story-title"
+              value={this.state.title}
+              onChange={this.onChange}
+            />
+            <label htmlFor="story-pre_description">story pre-description</label>{" "}
+            <input
+              type="text"
+              name="pre_description"
+              id="story-pre_description"
+              value={this.state.pre_description}
+              onChange={this.onChange}
+            />
+
+            <label htmlFor="story-text">story text</label>
+            <MyEditor text={text} editText={this.editText} />
+
+            <select name="lens" id="lens" onChange={this.onChange}>
+              <option>Select Lens</option>
+              {lensesUI}
+            </select>
+            <br />
+            <ExpansionPanel id="checkboxes">
+              <ExpansionPanelSummary>
+                <p>Select SDGs</p>
+              </ExpansionPanelSummary>
+              <ExpansionPanelDetails>
+                <MenuList className="menu-full-width">{SDGsUI}</MenuList>
+              </ExpansionPanelDetails>
+            </ExpansionPanel>
+            <br />
+            <label htmlFor="image">Story image</label>
+            <img
+              className="admin-img-update"
+              src={this.state.imgs[0]}
+              alt="uploaded"
+            />
+            <input
+              type="file"
+              name="img"
+              accept="image/*"
+              onChange={this.onChangeImg}
+            />
+            <img
+              src="/imgs/loading.gif"
+              alt=""
+              className="loading"
+              style={{ display: this.state.loading ? "block" : "none" }}
+            />
+            <button
+              type="submit"
+              className="btn"
+              disabled={!this.state.formValid}
+            >
+              <i className="fas fa-edit" /> Update Story
           </button>
-          <div className="done-img">
-            <img src="/imgs/done.gif" alt="" />
-          </div>
-        </form>
-      </Paper>
-    );
+            <div className="done-img">
+              <img src="/imgs/done.gif" alt="" />
+            </div>
+          </form>
+        </Paper>
+      );
+    }
+    else { return null; }
   }
 }
